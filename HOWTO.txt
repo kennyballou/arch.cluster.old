@@ -11,7 +11,7 @@
 
 # TODO setup ntp server
 
-# setup custom repository and webserver (nginx)
+# setup local package repository and webserver (nginx)
 mkdir /var/archrepo
 cp /var/cache/pacman/pkg/* /var/archrepo
 repo-add /var/archrepo/bsu-vis.db.tar.gz /var/archrepo/*.pkg.tar.gz
