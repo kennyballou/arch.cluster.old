@@ -1,0 +1,27 @@
+#####################################
+# Master / Gateway setup
+
+# statically assign network card device names (gateway)
+#/etc/udev/rules.d/10-network.rules
+#eth0 -> net0
+#eth1 -> net1
+
+# setup dnsmasq for dhcp
+/etc/dnsmasq.conf
+
+# TODO setup ntp server
+
+# setup custom repository and webserver (nginx)
+mkdir /var/archrepo
+cp /var/cache/pacman/pkg/* /var/archrepo
+repo-add /var/archrepo/bsu-vis.db.tar.gz /var/archrepo/*.pkg.tar.gz
+edit /etc/nginx/nginx.conf
+systemctl start nginx
+
+
+#####################################
+# Client setup
+
+boot into Arch Live USB/CD
+wget ${master_ip}/bootscripts.tar.gz
+./node-install.sh <node#>
