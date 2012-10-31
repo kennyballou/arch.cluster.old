@@ -1,5 +1,8 @@
 #!/bin/sh
 
+MIN_NODE=1
+MAX_NODE=199
+
 set -o nounset
 set -o errexit
 
@@ -9,17 +12,16 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-if [ $1 -le 0 ] || [ $1 -ge 100 ]; then
-    # TODO: could ping to see if it already exists
-    echo "node# must be integer between 1 and 99"
+if [ $1 -lt ${MIN_NODE} ] || [ $1 -gt ${MAX_NODE} ]; then
+    echo "node# must be integer between ${MIN_NODE} and ${MAX_NODE}"
     exit 1
 fi
 
 
 node_number=$1
 
-master_ip=192.168.1.100
-node_ip=192.168.1.1${node_number}
+master_ip=192.168.1.254     # could get this from the dhcp server
+node_ip=192.168.1.${node_number}
 hostname=node${node_number}
 netmask=24
 broadcast=192.168.1.255
@@ -44,7 +46,7 @@ mkinitcpio -p linux
 echo "root:root" | chpasswd
 
 # install base packages
-pacman --noconfirm -S syslinux iproute2 openssh zsh vim mlocate
+pacman --noconfirm -S syslinux iproute2 openssh zsh vim salt-git
 
 # setup syslinux
 #   (installing syslinux through pacman writes syslinux.cfg - install ours)
@@ -58,11 +60,16 @@ interface=eth0
 address=${node_ip}
 netmask=${netmask}
 broadcast=${broadcast}
+gateway=${master_ip}
 EOF
-#gateway=${master_ip}
+
+cat >> /etc/hosts << EOF
+${master_ip} bsu-vis.boisestate.edu bsu-vis master salt
+EOF
 
 # enable systemd services
 systemctl enable network.service
 systemctl enable lvm.service
 systemctl enable sshd.service
+systemctl enable salt-minion.service
 
