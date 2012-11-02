@@ -140,9 +140,9 @@ broadcast=${BROADCAST}
 gateway=${MASTER_IP}
 EOF
 
-#    cat >> /etc/hosts << EOF
-#${MASTER_IP} bsu-vis.boisestate.edu bsu-vis master salt
-#EOF
+    cat >> /etc/hosts << EOF
+${MASTER_IP} bsu-vis.boisestate.edu bsu-vis master salt
+EOF
 
     # enable systemd services (has return code of 1 so disable errexit)
     set +o errexit
