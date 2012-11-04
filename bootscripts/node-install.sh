@@ -9,8 +9,6 @@ SCRIPT_PATH=`pwd`
 popd > /dev/null
 
 
-STAGE=main_install
-
 NODE_NUMBER=0
 MIN_NODE=1
 MAX_NODE=199
@@ -74,7 +72,7 @@ unmount_partitions() {
 }
 
 
-prepare_base_system() {
+bootstrap_system() {
     # copy premade config files to /mnt
     cp pacman.conf /etc/pacman.conf
     pacstrap /mnt base base-devel
@@ -90,7 +88,7 @@ prepare_base_system() {
 live_install_main() {
     prepare_hdd
     mount_partitions
-    prepare_base_system
+    bootstrap_system
 
     cp ${SCRIPT_PATH}/${SCRIPT_NAME} /mnt/root/${SCRIPT_NAME}
 
@@ -99,7 +97,7 @@ live_install_main() {
 
     rm /mnt/root/${SCRIPT_NAME}
 
-    #unmount_partitions
+    unmount_partitions
 }
 
 
@@ -123,7 +121,7 @@ chroot_stage_main() {
     echo "root:root" | chpasswd
 
     # install initial packages
-    pacman --noconfirm -S syslinux iproute2 openssh zsh rsync wget curl vim salt-git
+    pacman --noconfirm -S syslinux iproute2 openssh zsh rsync wget curl vim
 
     # setup syslinux
     #   (installing syslinux through pacman overwrites syslinux.cfg - reinstall ours)
@@ -147,9 +145,7 @@ EOF
     # enable systemd services (has return code of 1 so disable errexit)
     set +o errexit
     systemctl enable network.service
-    systemctl enable lvm.service
     systemctl enable sshd.service
-    systemctl enable salt-minion.service
     set -o errexit
 }
 
@@ -159,22 +155,33 @@ EOF
 # main program entry logic
 ##################################################
 
+ACTION=full_install
+
 # parse arguments
 declare -a args
 while (( $# )); do
-	case "$1" in
-		#-q|--quiet) QUIET=1;;
-        --chrootstage) STAGE=chroot_install;;
-		*)
-			args+=("$1")
-			;;
-	esac
-	shift
+    case "$1" in
+        #-q|--quiet) QUIET=1;;
+        in-chroot)
+            ACTION=in-chroot;;
+        partition)
+            ACTION=partition;;
+        mount)
+            ACTION=mount;;
+        umount)
+            ACTION=umount;;
+        bootstrap)
+            ACTION=bootstrap;;
+        *)
+            args+=("$1")
+            ;;
+    esac
+    shift
 done
 
 # test for minimum number of arguments
 if [[ -z ${args[0]-} ]]; then
-    echo "TODO: usage error"
+    echo "TODO: make a better usage error message"
     exit 1
 fi
 
@@ -185,11 +192,19 @@ if [ $NODE_NUMBER -lt $MIN_NODE ] || [ $NODE_NUMBER -gt $MAX_NODE ]; then
     exit 1
 fi
 
-if [ $STAGE == main_install ]; then
-    live_install_main
-elif [ $STAGE == chroot_install ]; then
-    chroot_stage_main
-else
-    echo "invalid operation"
-    exit 1
-fi
+
+case "$ACTION" in
+    full_install)
+        live_install_main;;
+    in-chroot)
+        chroot_stage_main;;
+    mount)
+        mount_partitions;;
+    umount)
+        unmount_partitions;;
+    bootstrap)
+        bootstrap_system;;
+    *)
+        exit 1;;
+esac
+
