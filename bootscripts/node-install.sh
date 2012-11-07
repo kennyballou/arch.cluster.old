@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -o nounset
 set -o errexit
@@ -50,7 +50,7 @@ prepare_hdd() {
     # create logical volumes
     lvcreate -C y -L 5G VolGroup00 -n lvolswap
     lvcreate -L 15G VolGroup00 -n lvolroot
-    # XXX: home can/will be NFS
+    # home is mounted on NFS
     # XXX: var can be added in the future if needed
 
     mkswap -L swap /dev/mapper/VolGroup00-lvolswap
@@ -80,7 +80,6 @@ bootstrap_system() {
 
     # generate fstab
     genfstab -U -p /mnt >> /mnt/etc/fstab
-    #cp /etc/resolv.conf /mnt/etc/
 }
 
 
@@ -93,7 +92,7 @@ live_install_main() {
     cp ${SCRIPT_PATH}/${SCRIPT_NAME} /mnt/root/${SCRIPT_NAME}
 
     # call this same script except now use 'chrootstage'
-    arch-chroot /mnt /root/${SCRIPT_NAME} --chrootstage ${NODE_NUMBER}
+    arch-chroot /mnt /root/${SCRIPT_NAME} ${NODE_NUMBER} in-chroot 
 
     rm /mnt/root/${SCRIPT_NAME}
 
@@ -103,6 +102,7 @@ live_install_main() {
 
 
 chroot_stage_main() {
+    DOMAIN=viz
     MASTER_IP=192.168.1.254     # could get this from the dhcp server
     NODE_IP=192.168.1.${NODE_NUMBER}
     HOSTNAME=node${NODE_NUMBER}
@@ -120,15 +120,13 @@ chroot_stage_main() {
     # initialize initial root password
     echo "root:root" | chpasswd
 
-    # install initial packages
-    pacman --noconfirm -S syslinux iproute2 openssh zsh rsync wget curl vim
-
     # setup syslinux
-    #   (installing syslinux through pacman overwrites syslinux.cfg - reinstall ours)
+    pacman --noconfirm -S syslinux
     mv /boot/syslinux/syslinux.cfg.REPLACE /boot/syslinux/syslinux.cfg
     syslinux-install_update -iam
 
     # setup networking
+    pacman --noconfirm -S iproute2 openssh
     mkdir -p /etc/conf.d
     cat > /etc/conf.d/network << EOF
 interface=eth0
@@ -138,14 +136,40 @@ broadcast=${BROADCAST}
 gateway=${MASTER_IP}
 EOF
 
-    cat >> /etc/hosts << EOF
-${MASTER_IP} bsu-vis.boisestate.edu bsu-vis master salt
+    cat > /etc/resolv.conf << EOF
+domain ${DOMAIN}
+nameserver ${MASTER_IP}
 EOF
+
+#    cat >> /etc/hosts << EOF
+#EOF
+
+    # setup NFS /home mount
+    pacman --noconfirm -S nfs-utils nfsidmap
+    mv /etc/idmapd.conf.REPLACE /etc/idmapd.conf
+    cat >> /etc/fstab << EOF
+# NFSv4 home mount
+${MASTER_IP}:/home    				/home   	nfs4    	rsize=8192,wsize=8192,intr,noauto,x-systemd.automount  0 0
+EOF
+
+    # TODO: setup ntp
+    pacman --noconfirm -S ntp
+
+    # setup sudo
+    pacman --noconfirm -S sudo
+    chown root:root /etc/sudoers.REPLACE
+    mv /etc/sudoers.REPLACE /etc/sudoers
+
+    # install other basic _necessities_
+    #   (don't go overboard here - we'll install other packages later)
+    pacman --noconfirm -S sudo zsh rsync vim
 
     # enable systemd services (has return code of 1 so disable errexit)
     set +o errexit
     systemctl enable network.service
     systemctl enable sshd.service
+    systemctl enable nfsd.service rpc-idmapd.service
+    systemctl enable ntpd.service
     set -o errexit
 }
 
