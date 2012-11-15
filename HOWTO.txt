@@ -1,35 +1,100 @@
-#####################################
-# Master / Gateway setup
+##########################################################################
+# Assign static network card device names (master/gateway)
+##########################################################################
 
-# statically assign network card device names (gateway)
-#/etc/udev/rules.d/10-network.rules
-#eth0 -> net0
-#eth1 -> net1
+# edit/create /etc/udev/rules.d/10-network.rules
+#	assign a static name by MAC address
+SUBSYSTEM=="net", ATTR{address}=="00:1f:bc:02:a0:60", NAME="net0"
+SUBSYSTEM=="net", ATTR{address}=="00:1f:bc:02:a0:61", NAME="net1"
 
-# setup dnsmasq for dhcp
-/etc/dnsmasq.conf
+# from now on, use net0, net1 instead of eth0, eth1 during setup
 
-# TODO setup ntp server
+DG NOTE: So far, it appears the network cards are coming up with predictable
+			/dev/eth[01] names.  So this is NOT currently setup on the master
 
-# setup local package repository and webserver (nginx)
-mkdir /var/archrepo
-cp /var/cache/pacman/pkg/* /var/archrepo
-repo-add /var/archrepo/bsu-vis.db.tar.gz /var/archrepo/*.pkg.tar.gz
-edit /etc/nginx/nginx.conf
+
+##########################################################################
+# Setup firewall iptables (master)
+##########################################################################
+
+# install iptables
+
+# configure stateful firewall
+
+# poke some holes in it
+#	ssh			(tcp 22)
+#	http		(tcp 80)
+#	nfs			(tcp,udp 111,2049)
+#	dhcp/dns	(udp 67,68)
+
+# save the current state
+iptables-save > /etc/iptables/iptables.rules
+
+systemctl start iptables.service
+
+# useful command
+iptables -nvL
+
+
+##########################################################################
+# Setup DHCP and DNS servers (master)
+##########################################################################
+
+# install dnsmasq and edit config /etc/dnsmasq.conf
+#	use following settings
+interface=eth1
+expand-hosts
+domain=XXXX
+dhcp-range=192.168.1.200,192.168.1.250,255.255.255.0,10h
+
+
+##########################################################################
+# Setup NFS home directory (master)
+##########################################################################
+
+# edit /etc/idmapd.conf
+# edit /etc/exports
+
+systemctl start nfsd.service rpcbind.service rpc-idmapd.service
+
+
+##########################################################################
+# Setup a local package repository
+##########################################################################
+
+repo directory will be /srv/http/arch.repo/
+repo name is just "local"
+
+MASTER SETUP
+
+# install nginx and edit /etc/nginx/nginx.conf to serve /srv/http/arch.repo/
+# root only on eth1
+
+# download desired node packages onto master, you do not have to install them (pacman -Sw)
+
+# create symlinks between all pkg files in
+#	/var/cache/pacman/pkg/ to /srv/http/arch.repo/
+
+# generate a repo db
+repo-add /srv/http/arch.repo/local.db.tar.gz /srv/http/arch.repo/*.pkg.tar.xz
+
 systemctl start nginx
 
+CLIENT SETUP
 
-#####################################
-# Client setup
+# in /etc/pacman.conf remove all defined repos and define the local one
+[local]
+SigLevel = Optional TrustAll
+Server = http://192.168.1.254/
 
-boot into Arch Live USB/CD
-wget ${master_ip}/bootscripts.tar.gz
-./node-install.sh <node#>
+# test it
+pacman -Sy
 
 
 
-#####################################
-# Setup SSH passwordless logins (NFS home)
+##########################################################################
+# Setup trusted ssh
+##########################################################################
 
 # generate 1024 bit dsa password
 #	accept the default file locations
