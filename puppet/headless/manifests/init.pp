@@ -1,11 +1,12 @@
 import "python"
 import "vcs"
+import "cuda"
 
 class headless::config {
 }
 
 class headless::install {
-    require( Class['python', 'vcs'])
+    require( Class['python', 'vcs', 'cuda'])
 
     package {'boost':
         ensure => installed,
