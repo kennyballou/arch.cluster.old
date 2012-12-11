@@ -1,7 +1,11 @@
-class cuda::config {
+import "python"
+
+class devel::cuda::config {
 }
 
-class cuda::install {
+class devel::cuda::install {
+    require( Class['python'])
+
     package {'nvidia':
         ensure => installed,
     }
@@ -15,6 +19,6 @@ class cuda::install {
     }
 }
 
-class cuda {
-    include cuda::config, cuda::install
+class devel::cuda {
+    include devel::cuda::config, devel::cuda::install
 }
