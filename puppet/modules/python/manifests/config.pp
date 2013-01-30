@@ -1,0 +1,2 @@
+class python::config {
+}

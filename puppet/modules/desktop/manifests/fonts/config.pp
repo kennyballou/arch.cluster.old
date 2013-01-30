@@ -1,0 +1,2 @@
+class desktop::fonts::config {
+}

@@ -1,0 +1,2 @@
+class devel::cuda::config {
+}

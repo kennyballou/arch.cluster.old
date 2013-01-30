@@ -1,0 +1,2 @@
+class desktop::av::config {
+}

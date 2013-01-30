@@ -1,0 +1,2 @@
+class headless::config {
+}
