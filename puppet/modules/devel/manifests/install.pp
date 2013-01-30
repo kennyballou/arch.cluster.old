@@ -1,4 +1,4 @@
-import "python"
+import 'python'
 
 class devel::install {
     require( Class['python', 'devel::java', 'devel::python', 'devel::cuda'])

@@ -1,7 +1,7 @@
-import "python"
-import "vcs"
-import "devel"
-import "devel_tools"
+import 'python'
+import 'vcs'
+import 'devel'
+import 'devel_tools'
 
 class headless::install {
     require( Class[

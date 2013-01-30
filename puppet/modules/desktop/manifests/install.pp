@@ -1,4 +1,4 @@
-import "headless"
+import 'headless'
 
 class desktop::install {
     require( Class[

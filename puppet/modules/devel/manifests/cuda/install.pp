@@ -1,4 +1,4 @@
-import "python"
+import 'python'
 
 class devel::cuda::install {
     require( Class['python'])

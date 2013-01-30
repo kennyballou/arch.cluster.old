@@ -1,16 +1,16 @@
-import "headless"
-import "desktop"
+import 'headless'
+import 'desktop'
 
-node "headless-node" {
+node 'headless-node' {
     include headless
 }
 
-node "desktop-node" {
+node 'desktop-node' {
     include desktop
 }
 
-node "node12.viz" inherits headless-node {
+node 'node12.viz' inherits headless-node {
 }
 
-node "node24.viz" inherits desktop-node {
+node 'node24.viz' inherits desktop-node {
 }

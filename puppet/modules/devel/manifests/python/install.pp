@@ -1,4 +1,4 @@
-import "python"
+import 'python'
 
 class devel::python::install {
     require( Class['python'])
