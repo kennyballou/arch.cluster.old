@@ -1,3 +1,11 @@
+# == Class: devel_tools::install
+#
+# Installation for `devel_tools`
+#
+# === Authors
+#
+# Kenny Ballou <kballou@onyx.boisestate.edu>
+#
 class devel_tools::install {
     package {'gdb':
         ensure => latest,

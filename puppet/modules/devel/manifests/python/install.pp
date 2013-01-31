@@ -1,5 +1,13 @@
 import 'python'
 
+# == Class devel::python::install
+#
+# Installation class for `devel::python`
+#
+# === Authors
+#
+# Kenny Ballou <kballou@onyx.boisestate.edu>
+#
 class devel::python::install {
     require python
 

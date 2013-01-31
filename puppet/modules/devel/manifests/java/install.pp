@@ -1,3 +1,11 @@
+# == Class: devel::java::install
+#
+# Installation class for `devel::java`
+#
+# === Authors
+#
+# Kenny Ballou <kballou@onyx.boisestate.edu>
+#
 class devel::java::install {
     package {'jdk7-openjdk':
         ensure => latest,

@@ -1,3 +1,11 @@
+# == Class: desktop::fonts::install
+#
+# Installation class for fonts
+#
+# === Authors
+#
+# Kenny Ballou <kballou@onyx.boisestate.edu>
+#
 class desktop::fonts::install {
     package {'ttf-bitstream-vera':
         ensure => latest,

@@ -1,5 +1,13 @@
 import 'headless'
 
+# == Class: desktop::install
+#
+# Installation class for `desktop`
+#
+# === Authors
+#
+# Kenny Ballou <kballou@onyx.boisestate.edu>
+#
 class desktop::install {
     require headless,
         desktop::av,

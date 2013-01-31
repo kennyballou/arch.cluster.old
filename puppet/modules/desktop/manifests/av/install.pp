@@ -1,3 +1,11 @@
+# == Class: desktop::av::install
+#
+# Installation class for `desktop::av`
+#
+# === Authors
+#
+# Kenny Ballou <kballou@onyx.boisestate.edu>
+#
 class desktop::av::install {
     package {'alsa-lib':
         ensure => latest,
