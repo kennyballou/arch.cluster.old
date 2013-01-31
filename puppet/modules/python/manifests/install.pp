@@ -8,10 +8,10 @@
 #
 class python::install {
     package {'python':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'python2':
-        ensure => installed,
+        ensure => latest,
     }
 }

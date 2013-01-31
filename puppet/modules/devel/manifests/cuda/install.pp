@@ -12,14 +12,14 @@ class devel::cuda::install {
     require python
 
     package {'nvidia':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'cuda':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'python2-pycuda':
-        ensure => installed,
+        ensure => latest,
     }
 }

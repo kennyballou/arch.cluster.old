@@ -12,30 +12,30 @@ class devel::python::install {
     require python
 
     package {'python-imaging':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'python2-numpy':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'python2-scipy':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'python-numpy':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'python-scipy':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'ipython':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'ipython2':
-        ensure => installed,
+        ensure => latest,
     }
 }

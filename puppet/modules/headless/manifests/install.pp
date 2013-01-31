@@ -15,22 +15,22 @@ class headless::install {
     require python, vcs, devel, devel_tools
 
     package {'dnsutils':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'nmap':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'tree':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'vim':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'zsh':
-        ensure => installed,
+        ensure => latest,
     }
 }

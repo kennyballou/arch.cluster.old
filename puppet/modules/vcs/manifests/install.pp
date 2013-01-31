@@ -8,14 +8,14 @@
 #
 class vcs::install {
     package {'git':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'subversion':
-        ensure => installed,
+        ensure => latest,
     }
 
     package {'mercurial':
-        ensure => installed,
+        ensure => latest,
     }
 }
