@@ -1,7 +1,7 @@
 import 'python'
 
 class devel::python::install {
-    require( Class['python'])
+    require python
 
     package {'python-imaging':
         ensure => installed,

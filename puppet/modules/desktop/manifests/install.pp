@@ -1,12 +1,11 @@
 import 'headless'
 
 class desktop::install {
-    require( Class[
-        'headless',
-        'desktop::av',
-        'desktop::fonts',
-        'desktop::kde',
-        'desktop::openbox'])
+    require headless,
+        desktop::av,
+        desktop::fonts,
+        desktop::kde,
+        desktop::openbox
 
     package {'chromium':
         ensure => latest,

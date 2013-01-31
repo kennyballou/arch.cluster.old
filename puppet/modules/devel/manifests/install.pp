@@ -1,7 +1,7 @@
 import 'python'
 
 class devel::install {
-    require( Class['python', 'devel::java', 'devel::python', 'devel::cuda'])
+    require python, devel::java, devel::python, devel::cuda
 
     package {'boost':
         ensure => latest,

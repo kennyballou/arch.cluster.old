@@ -1,7 +1,7 @@
 import 'python'
 
 class devel::cuda::install {
-    require( Class['python'])
+    require python
 
     package {'nvidia':
         ensure => installed,
